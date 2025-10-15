@@ -46,6 +46,33 @@ async function tryLoadImage(img: HTMLImageElement, srcs: string[]) {
   });
 }
 
+/** Setelah preload, kunci ukuran gambar berdasarkan rasio aslinya (anti gepeng) */
+function fitImages(root: HTMLElement) {
+  const imgs = Array.from(
+    root.querySelectorAll<HTMLImageElement>('img[data-fit="pdf"]')
+  );
+  imgs.forEach((img) => {
+    const parent = img.parentElement as HTMLElement | null;
+    const parentWidth = parent?.getBoundingClientRect()?.width || RENDER_WIDTH_PX - 48; // padding kartu ~24x2
+    const maxH = 420; // tinggi maksimal gambar di A4
+
+    const nw = img.naturalWidth || 1;
+    const nh = img.naturalHeight || 1;
+
+    // skala agar muat di parentWidth & maxH tanpa mengubah rasio
+    const scale = Math.min(parentWidth / nw, maxH / nh);
+
+    const w = Math.max(1, Math.round(nw * scale));
+    const h = Math.max(1, Math.round(nh * scale));
+
+    // penting: set width & height eksplisit, JANGAN width:100%
+    img.style.width = `${w}px`;
+    img.style.height = `${h}px`;
+    img.style.maxWidth = "100%";
+    img.style.maxHeight = `${maxH}px`;
+  });
+}
+
 export default function ExportPDFButton({
   plants,
   disabled,
@@ -83,7 +110,12 @@ export default function ExportPDFButton({
   const handleExport = async () => {
     if (!ref.current) return;
     const html2pdf = (await import("html2pdf.js")).default;
+
+    // 1) Pastikan semua gambar sudah ter-load
     await preloadImages(ref.current);
+
+    // 2) Kunci ukuran proporsional berdasar naturalWidth/Height → anti gepeng
+    fitImages(ref.current);
 
     const opt = {
       margin: 10,
@@ -136,15 +168,16 @@ export default function ExportPDFButton({
         }}
       >
         <div ref={ref}>
-          {plants.map((p) => {
+          {plants.map((p, idx) => {
             const candidates = getSrcCandidates(p);
+            const isLast = idx === plants.length - 1;
             return (
               <div
                 key={p.id}
                 style={{
                   breakInside: "avoid",
                   pageBreakInside: "avoid",
-                  pageBreakAfter: "always",
+                  pageBreakAfter: isLast ? "avoid" : "always", // hindari halaman kosong ekstra
                   padding: 24,
                   border: "1px solid #e5e7eb",
                   borderRadius: 12,
@@ -166,19 +199,28 @@ export default function ExportPDFButton({
                   {p.latin}
                 </p>
 
-                {/* Area gambar rasio 4:3 agar tidak melar */}
-                <div style={{ position: "relative", width: "100%" }}>
-                  <div style={{ paddingTop: "75%" }} />
+                {/* Area gambar: center, anti gepeng (width & height diset di fitImages) */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
+                    background: "#fafafa",
+                    borderRadius: 10,
+                    overflow: "hidden",
+                    marginTop: 6,
+                    marginBottom: 12,
+                  }}
+                >
                   <img
                     alt={p.latin}
                     data-candidates={JSON.stringify(candidates)}
+                    data-fit="pdf"
                     style={{
-                      position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      borderRadius: 10,
+                      // <== JANGAN width:100%; biarkan fitImages yang set width & height
+                      display: "block",
+                      borderRadius: 8,
                       background: "#fafafa",
                     }}
                   />
@@ -245,6 +287,20 @@ export default function ExportPDFButton({
                       {toList(p.use).join(", ") || "-"}
                     </span>
                   </div>
+                </div>
+
+                {/* Branding Plantify */}
+                <div
+                  style={{
+                    marginTop: 24,
+                    borderTop: "1px solid #e5e7eb",
+                    paddingTop: 8,
+                    textAlign: "center",
+                    fontSize: 12,
+                    color: "#6b7280",
+                  }}
+                >
+                  © 2025 <span style={{ color: "#059669", fontWeight: 600 }}>Plantify</span> — Smart Plant Recommender Application
                 </div>
               </div>
             );

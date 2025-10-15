@@ -1,4 +1,3 @@
-// app/tanaman/[id]/page.tsx
 import { fetchPlants } from "@/lib/loadData";
 import { displayName } from "@/lib/types";
 import PlantImage from "@/components/PlantImage";
@@ -23,7 +22,6 @@ export default async function PlantDetailPage({
       </main>
     );
 
-  // untuk PDF pastikan gambar via API agar ketemu berapapun ekstensinya
   const plantForPdf = { ...plant, image: `/api/plant-image?id=${plant.id}` };
 
   return (
@@ -47,10 +45,9 @@ export default async function PlantDetailPage({
         </div>
 
         <div className="mt-6 grid md:grid-cols-2 gap-8">
-          {/* Gambar: container rasio 4:3 + object-contain (anti mleyot) */}
+          {/* Gambar: container rasio 4:3 */}
           <div className="w-full">
             <div className="relative w-full rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
-              {/* Aspect ratio 4:3 */}
               <div className="pt-[75%]" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <PlantImage
@@ -62,7 +59,7 @@ export default async function PlantDetailPage({
             </div>
           </div>
 
-          {/* Detail */}
+          {/* Detail tanaman */}
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-emerald-800">
               {displayName(plant)}
@@ -127,6 +124,11 @@ export default async function PlantDetailPage({
               </div>
             </dl>
           </div>
+        </div>
+
+        {/* Branding aplikasi */}
+        <div className="mt-12 text-center text-gray-500 text-sm">
+          © 2025 <span className="text-emerald-700 font-semibold">Plantify</span> — Smart Plant Recommender Application
         </div>
       </div>
     </main>
