@@ -1,7 +1,29 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Plant, displayName } from "@/lib/types";
+import type { Plant } from "@/lib/types";
+
+/** Ambil nama paling “spesifik” untuk judul kartu:
+ *  - kalau ada 2+ common name, pakai indeks [1] (biasanya kultivar/varian, mis. "Amelia")
+ *  - kalau tidak ada, fallback ke common[0]
+ *  - kalau tidak ada keduanya, fallback ke latin
+ */
+const preferredCommon = (p: Plant) => {
+  const commons = Array.isArray((p as any).common) ? (p as any).common : [];
+  return commons[1] ?? commons[0] ?? p.latin;
+};
+
+/** Kumpulan kandidat sumber gambar (dicoba berurutan sampai ada yang berhasil) */
+const srcCandidates = (p: Plant) =>
+  Array.from(
+    new Set(
+      [
+        p.image, // dari loader/data
+        `/images/plants/${p.id}.jpg`, // default per id
+        `/images/placeholder-plant.jpg`, // placeholder global
+      ].filter(Boolean) as string[]
+    )
+  );
 
 export default function PlantCard({
   plant,
@@ -12,12 +34,18 @@ export default function PlantCard({
   selected?: boolean;
   onToggleSelect?: (id: number) => void;
 }) {
-  // src awal → image dari loader atau default /images/plants/{id}.jpg
-  const initialSrc = useMemo(
-    () => plant.image ?? `/images/plants/${plant.id}.jpg`,
-    [plant.image, plant.id]
-  );
-  const [src, setSrc] = useState(initialSrc);
+  const candidates = useMemo(() => srcCandidates(plant), [plant]);
+  const [src, setSrc] = useState<string>(candidates[0]);
+
+  // Jika gagal load gambar, coba kandidat berikutnya
+  const onErr = () => {
+    const idx = candidates.indexOf(src);
+    const next = candidates[idx + 1];
+    if (next) setSrc(next);
+  };
+
+  const title = preferredCommon(plant); // ex: "Amelia"
+  const subtitle = plant.latin;         // ex: "Aglaonema"
 
   return (
     <div className="rounded-xl shadow-md p-4 bg-white hover:shadow-lg transition relative">
@@ -38,14 +66,17 @@ export default function PlantCard({
         <div className="w-full h-40 mb-3 flex items-center justify-center bg-white rounded-md overflow-hidden">
           <img
             src={src}
-            alt={plant.latin}
-            onError={() => setSrc("/images/plants/placeholder-plant.jpg")}
+            alt={title}
+            onError={onErr}
             className="max-h-40 object-contain"
             loading="lazy"
           />
         </div>
-        <div className="font-semibold">{displayName(plant)}</div>
-        <div className="text-sm text-gray-500">{plant.latin}</div>
+
+        {/* Judul besar: kultivar/common */}
+        <div className="font-semibold text-lg text-gray-900">{title}</div>
+        {/* Subjudul kecil: nama latin */}
+        <div className="text-sm text-gray-500">{subtitle}</div>
       </Link>
     </div>
   );

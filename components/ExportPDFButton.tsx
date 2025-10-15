@@ -4,7 +4,7 @@ import type { Plant } from "@/lib/types";
 import { displayName } from "@/lib/types";
 
 const RENDER_WIDTH_PX = 1500;
-const IMAGE_MAX_HEIGHT_PX = 620; // jaga agar 1 kartu muat 1 halaman
+const IMAGE_MAX_HEIGHT_PX = 620;
 
 const INLINE_PLACEHOLDER =
   "data:image/svg+xml;utf8," +
@@ -17,6 +17,10 @@ const INLINE_PLACEHOLDER =
        </text>
      </svg>`
   );
+
+// helper: pastikan value jadi array string
+const toList = (v: unknown) =>
+  Array.isArray(v) ? v.map(String) : v == null ? [] : [String(v)];
 
 function getSrcCandidates(p: Plant) {
   const c: string[] = [];
@@ -48,7 +52,10 @@ async function tryLoadImage(img: HTMLImageElement, srcs: string[]) {
 export default function ExportPDFButton({
   plants,
   disabled,
-}: { plants: Plant[]; disabled?: boolean }) {
+}: {
+  plants: Plant[];
+  disabled?: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   const preloadImages = async (root: HTMLElement) => {
@@ -70,7 +77,6 @@ export default function ExportPDFButton({
   const handleExport = async () => {
     if (!ref.current) return;
     const html2pdf = (await import("html2pdf.js")).default;
-
     await preloadImages(ref.current);
 
     const opt = {
@@ -83,7 +89,11 @@ export default function ExportPDFButton({
         useCORS: true,
         allowTaint: true,
       },
-      jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
+      jsPDF: {
+        unit: "mm" as const,
+        format: "a4" as const,
+        orientation: "portrait" as const,
+      },
       pagebreak: { mode: ["avoid-all", "css", "legacy"] as const },
     };
 
@@ -136,7 +146,13 @@ export default function ExportPDFButton({
                 <h2 style={{ fontSize: 28, margin: 0, color: "#0b3d2e" }}>
                   {displayName(p)}
                 </h2>
-                <p style={{ margin: "6px 0 14px", fontStyle: "italic", color: "#374151" }}>
+                <p
+                  style={{
+                    margin: "6px 0 14px",
+                    fontStyle: "italic",
+                    color: "#374151",
+                  }}
+                >
                   {p.latin}
                 </p>
 
@@ -154,24 +170,75 @@ export default function ExportPDFButton({
                   }}
                 />
 
-                <div style={{ marginTop: 14, fontSize: 14.5, lineHeight: 1.75, color: "#111" }}>
-                  <div><b>Family:</b> <span style={{ color: "#374151" }}>{p.family ?? "-"}</span></div>
-                  <div><b>Kategori:</b> <span style={{ color: "#374151" }}>{p.category ?? "-"}</span></div>
-                  <div><b>Asal/Origin:</b> <span style={{ color: "#374151" }}>{p.origin ?? "-"}</span></div>
-                  <div><b>Iklim:</b> <span style={{ color: "#374151" }}>{p.climate ?? "-"}</span></div>
+                <div
+                  style={{
+                    marginTop: 14,
+                    fontSize: 14.5,
+                    lineHeight: 1.75,
+                    color: "#111",
+                  }}
+                >
+                  <div>
+                    <b>Family:</b>{" "}
+                    <span style={{ color: "#374151" }}>{p.family ?? "-"}</span>
+                  </div>
+                  <div>
+                    <b>Kategori:</b>{" "}
+                    <span style={{ color: "#374151" }}>
+                      {p.category ?? "-"}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Asal/Origin:</b>{" "}
+                    <span style={{ color: "#374151" }}>{p.origin ?? "-"}</span>
+                  </div>
+                  <div>
+                    <b>Iklim:</b>{" "}
+                    <span style={{ color: "#374151" }}>{p.climate ?? "-"}</span>
+                  </div>
                   <div>
                     <b>Suhu ideal:</b>{" "}
                     <span style={{ color: "#374151" }}>
-                      {p.tempmin?.celsius ?? "-"}°C — {p.tempmax?.celsius ?? "-"}°C
-                      {" "}({p.tempmin?.fahrenheit ?? "-"}–{p.tempmax?.fahrenheit ?? "-"}°F)
+                      {p.tempmin?.celsius ?? "-"}°C — {p.tempmax?.celsius ?? "-"}°C (
+                      {p.tempmin?.fahrenheit ?? "-"}–{p.tempmax?.fahrenheit ?? "-"}°F)
                     </span>
                   </div>
-                  <div><b>Cahaya ideal:</b> <span style={{ color: "#374151" }}>{p.ideallight ?? "-"}</span></div>
-                  <div><b>Cahaya toleran:</b> <span style={{ color: "#374151" }}>{p.toleratedlight ?? "-"}</span></div>
-                  <div><b>Penyiraman:</b> <span style={{ color: "#374151" }}>{p.watering ?? "-"}</span></div>
-                  <div><b>Hama:</b> <span style={{ color: "#374151" }}>{(p.insects ?? []).join(", ") || "-"}</span></div>
-                  <div><b>Penyakit:</b> <span style={{ color: "#374151" }}>{(p.diseases ?? []).join(", ") || "-"}</span></div>
-                  <div><b>Penggunaan:</b> <span style={{ color: "#374151" }}>{(p.use ?? []).join(", ") || "-"}</span></div>
+                  <div>
+                    <b>Cahaya ideal:</b>{" "}
+                    <span style={{ color: "#374151" }}>
+                      {p.ideallight ?? "-"}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Cahaya toleran:</b>{" "}
+                    <span style={{ color: "#374151" }}>
+                      {p.toleratedlight ?? "-"}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Penyiraman:</b>{" "}
+                    <span style={{ color: "#374151" }}>
+                      {p.watering ?? "-"}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Hama:</b>{" "}
+                    <span style={{ color: "#374151" }}>
+                      {toList(p.insects).join(", ") || "-"}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Penyakit:</b>{" "}
+                    <span style={{ color: "#374151" }}>
+                      {toList(p.diseases).join(", ") || "-"}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Penggunaan:</b>{" "}
+                    <span style={{ color: "#374151" }}>
+                      {toList(p.use).join(", ") || "-"}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
