@@ -1,56 +1,151 @@
-Berikut README GitHub versi **siap copas dan langsung tampil rapi di tampilan GitHub (Markdown .md)** untuk proyekmu **🌿 Plantify – Recommender System for Living Decorative Plants**:
+Perfect 👌 — berikut versi **README.md** Plantify kamu yang **100% disusun ulang dengan format dan gaya yang identik dengan contoh DooIT** (struktur, jarak, heading, emoji, dan blok kode semua sudah rapi banget dan siap langsung copas ke GitHub):
 
 ---
 
-```markdown
-# 🌱 Plantify – Recommender System for Living Decorative Plants
+````markdown
+# 🌿 Plantify – Recommender System for Living Decorative Plants
 
-**Plantify** adalah aplikasi web modern berbasis **Next.js** yang membantu pengguna memilih **tanaman hias hidup** yang sesuai dengan kondisi ruangan, preferensi estetika, dan tingkat perawatan yang diinginkan.  
-Aplikasi ini menggunakan algoritma **content-based recommendation** dengan *filtering rules* dan *similarity scoring* terhadap dataset tanaman dari **Kaggle**.
+Plantify is a modern web-based application that helps users choose **living decorative plants** suitable for their room conditions, aesthetic preferences, and maintenance levels.  
+The app is built with **Next.js** and leverages a **content-based recommendation algorithm** using custom filtering rules and similarity scoring.  
+It uses a curated dataset from **Kaggle**, combining plant characteristics such as light, watering needs, and climate adaptability to produce personalized recommendations.
 
 ---
 
 ## 🚀 Key Features
 
-- 🌿 **Personalized Plant Recommendation**  
-  Menyesuaikan hasil dengan kondisi cahaya, iklim, penyiraman, dan preferensi dekoratif pengguna.
-
-- 🔍 **Smart Search System**  
-  Fitur pencarian fuzzy berbasis **Fuse.js** (fuzzy matching) dengan dukungan *TF-IDF*.
-
-- 🪴 **Interactive Filtering Panel**  
-  Filter kontekstual: cahaya, penyiraman, iklim, penempatan, dan gaya tanaman.
-
-- 📋 **Detailed Plant Information**  
-  Menampilkan nama ilmiah, kebutuhan cahaya & air, iklim, suhu ideal, toksisitas, dan fungsi dekoratif.
-
-- 💾 **Save / Like System**  
-  Simpan tanaman favorit untuk dilihat kembali.
-
-- 📄 **PDF Export**  
-  Unduh hasil rekomendasi atau daftar tanaman pilihan ke dalam file PDF.
+- 🌱 Personalized Plant Recommendation  
+- 🔍 Smart Search with Fuzzy Matching & TF-IDF  
+- 🪴 Contextual Filters (Light, Watering, Climate, Placement)  
+- 📋 Detailed Plant Information Page  
+- 💾 Save / Like System for Favorite Plants  
+- 📄 Export Recommendations to PDF  
+- ⚙️ Modular Next.js Architecture with TailwindCSS  
 
 ---
 
-## 🧠 Tech Stack
+## 👨‍💻 Development Team
 
-| Layer | Tools & Frameworks |
-|-------|--------------------|
-| **Frontend Framework** | Next.js (App Router, TypeScript, React 18) |
-| **Styling** | TailwindCSS |
-| **Search Engine** | Fuse.js + Custom Matching Algorithm |
-| **Data Handling** | Local JSON Dataset (PlantsData.json) |
-| **PDF Export** | jsPDF / html2canvas |
-| **Development Tools** | VS Code, Git, GitHub Actions (optional CI/CD) |
+| Name | Student ID | GitHub | Email |
+|------|-------------|--------|--------|
+| Fadillah Nur Laili | 5026221032 | – | – |
+| Sintiarani Febyan Putri | 5026221044 | – | – |
+| **Moehammad Fazle Mawla Sidiki** | 5026221110 | [@mfazms](https://github.com/mfazms) | fazlesidiki@gmail.com |
+| Parisya Naylah Suhaymi | 5026221138 | – | – |
+| Candleline Audrina Firsta | 5026221159 | – | – |
 
 ---
 
-## 📂 Folder Structure
+## 📁 Repository
 
+- 🔗 [Project Repository](https://github.com/YOUR_USERNAME/plantify)
+
+---
+
+## 🧰 Prerequisites
+
+Make sure the following tools are installed on your system:
+
+- Node.js (LTS)
+- Git & GitHub Desktop
+- Visual Studio Code
+- (Optional) Docker Desktop
+- (Optional) SonarCloud account
+- (Optional) Google Cloud Platform or Vercel account for deployment
+
+---
+
+## ✅ Local Project Setup
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/YOUR_USERNAME/plantify.git
+cd plantify
+
+# 2. Install dependencies
+npm install
+
+# If errors occur, use:
+npm install --legacy-peer-deps
+````
+
+📌 **Note**: `--legacy-peer-deps` is used to bypass dependency conflicts with older packages.
+
+```bash
+# 3. Start the development server
+npm run dev
 ```
 
+The app will run locally on **[http://localhost:3000](http://localhost:3000)**
+
+---
+
+## ⚙️ CI/CD Configuration (Optional for Deployment)
+
+If you wish to automate build and deployment via GitHub Actions:
+
+1. Create a new GitHub repository
+2. Add environment variables under:
+   **Settings → Secrets and variables → Actions**
+3. Push your local project:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/plantify.git
+git branch -M main
+git push -u origin main
+```
+
+✅ Once `.github/workflows/ci.yml` and `cd.yml` are configured, the CI/CD pipeline will run automatically.
+
+---
+
+## 🔄 DevOps Pipeline Flow (Example)
+
+* **CI Workflow**:
+  `Lint → Test → Build (Next.js) → Static Analysis`
+
+* **CD Workflow**:
+  `Authenticate → Build Docker Image → Deploy to Vercel / GCP Cloud Run`
+
+* **Monitoring (Optional)**:
+  Integrate **Google Cloud Monitoring** or **Vercel Analytics** for real-time performance insights.
+
+---
+
+## 🧠 Recommendation Logic Overview
+
+* **Prefiltering:**
+  Filters plants based on light, temperature, and climate compatibility.
+
+* **Scoring:**
+  Computes similarity between user preferences and dataset attributes using content-based matching.
+
+* **Ranking:**
+  Displays results sorted by relevance score with reason explanations.
+
+---
+
+## 📦 Dataset
+
+🔗 [Indoor House Plants Dataset with Care Instructions](https://www.kaggle.com/datasets/prakash27x/indoor-house-plants-dataset-with-care-instructions)
+
+Includes attributes such as:
+
+* Common & botanical names
+* Light & watering needs
+* Climate & origin
+* Decorative use, toxicity, and description
+* Image URL
+
+---
+
+## 🗂️ Folder Structure
+
+```bash
 PLANTIFY/
-├── app/
+├── app/                     # App Router (Next.js)
 │   ├── api/plant-image/route.ts
 │   ├── plants/
 │   │   ├── route.ts
@@ -60,145 +155,73 @@ PLANTIFY/
 │   ├── page.tsx
 │   └── globals.css
 │
-├── components/
+├── components/              # UI Components
 │   ├── ExportPDFButton.tsx
 │   ├── FiltersPanel.tsx
 │   ├── PlantCard.tsx
 │   ├── PlantImage.tsx
 │   └── PlantList.tsx
 │
-├── lib/
+├── lib/                     # Utilities & Logic
 │   ├── loadData.ts
 │   ├── recommend.ts
 │   └── types.ts
 │
-├── public/
+├── public/                  # Static Assets
 │   ├── data/PlantsData.json
 │   ├── images/plants/*.png
 │   ├── placeholder-plant.jpg
-│   └── icons (file.svg, globe.svg, etc.)
+│   └── icons/
 │
 ├── .gitignore
 ├── package.json
 └── README.md
-
-````
-
----
-
-## ⚙️ Local Setup Guide
-
-### 1️⃣ Clone Repository
-```bash
-git clone https://github.com/YOUR_USERNAME/plantify.git
-cd plantify
-````
-
-### 2️⃣ Install Dependencies
-
-```bash
-npm install
-# Jika ada konflik dependency:
-npm install --legacy-peer-deps
 ```
 
-### 3️⃣ Jalankan Development Server
-
-```bash
-npm run dev
-```
-
-Aplikasi akan berjalan di **[http://localhost:3000](http://localhost:3000)**
-
 ---
 
-## 📦 Dataset
+## 🧪 Testing (Optional)
 
-Dataset publik yang digunakan:
-🔗 [Indoor House Plants Dataset with Care Instructions](https://www.kaggle.com/datasets/prakash27x/indoor-house-plants-dataset-with-care-instructions)
+You can implement component testing using:
 
-Berisi:
-
-* Nama umum & ilmiah
-* Kebutuhan cahaya dan air
-* Iklim & suhu ideal
-* Toksisitas, fungsi dekoratif, deskripsi singkat
-* URL gambar tanaman
-
----
-
-## 🧩 Recommendation Logic Overview
-
-1. **Prefiltering**
-   Menyaring tanaman berdasarkan cahaya, suhu, dan iklim.
-
-2. **Scoring & Matching**
-   Menghitung kecocokan preferensi pengguna (penyiraman, dekorasi, dll) dengan *cosine similarity* dan *string matching*.
-
-3. **Ranking & Output**
-   Menampilkan daftar tanaman terurut dengan skor relevansi dan alasan rekomendasi.
-
----
-
-## 🧑‍💻 Development Team
-
-| Name                             | Student ID | Role                             | GitHub                               |
-| -------------------------------- | ---------- | -------------------------------- | ------------------------------------ |
-| Fadillah Nur Laili               | 5026221032 | Algorithm Developer              | –                                    |
-| Sintiarani Febyan Putri          | 5026221044 | Algorithm Developer              | –                                    |
-| **Moehammad Fazle Mawla Sidiki** | 5026221110 | Project Director / Algorithm Dev | [@mfazms](https://github.com/mfazms) |
-| Parisya Naylah Suhaymi           | 5026221138 | UI/UX Designer                   | –                                    |
-| Candleline Audrina Firsta        | 5026221159 | UI/UX Designer                   | –                                    |
-
----
-
-## 🧪 Functional Highlights
-
-| ID   | Feature               | Description                                    |
-| ---- | --------------------- | ---------------------------------------------- |
-| FR-1 | Dashboard             | Halaman utama dengan quotes & navigasi         |
-| FR-2 | Search                | Pencarian fuzzy berbasis nama umum/latin       |
-| FR-3 | Filter                | Filter cahaya, penyiraman, iklim, penempatan   |
-| FR-4 | Recommendation Engine | Algoritma content-based filtering              |
-| FR-5 | Result View           | Menampilkan hasil rekomendasi & skor relevansi |
-| FR-6 | Detail View           | Informasi lengkap tiap tanaman                 |
-| FR-7 | Save/Like             | Simpan tanaman favorit                         |
-| FR-8 | Favorites             | Lihat daftar tanaman tersimpan                 |
+* **Jest** + **React Testing Library**
+* Store test files under: `components/__tests__/*.test.tsx`
 
 ---
 
 ## 📊 Nonfunctional Highlights
 
-| Category           | Key Points                                  |
-| ------------------ | ------------------------------------------- |
-| **Performance**    | Hasil rekomendasi muncul ≤ 2 detik          |
-| **Security**       | Data favorit disimpan aman di local storage |
-| **Usability**      | UI responsif, mobile-friendly               |
-| **Explainability** | Tampilkan alasan di balik rekomendasi       |
+* **Performance**: Recommendations appear ≤ 2 seconds
+* **Security**: Local storage used securely for favorites
+* **Usability**: Responsive and mobile-friendly interface
+* **Transparency**: Displays reasoning for each recommendation
 
 ---
 
 ## 📄 License
 
 This project is licensed under the **MIT License**.
-See the LICENSE file for more details.
+See the `LICENSE` file for more details.
 
 ---
 
-## 📬 Contact
+## 📬 Need Help?
 
+If you encounter bugs or have questions, feel free to open an issue via
+➡️ [GitHub Issues](https://github.com/YOUR_USERNAME/plantify/issues)
+or contact the main developer:
 📧 **[fazlesidiki@gmail.com](mailto:fazlesidiki@gmail.com)**
-🌐 GitHub: [@mfazms](https://github.com/mfazms)
+
+---
 
 ```
 
 ---
 
-🔥 **Catatan:**  
-README di atas sudah:
-- Menggunakan struktur Markdown penuh agar tampil *clean & rapi* di GitHub.  
-- Siap langsung ditempel ke file `README.md` di repo kamu.  
-- Sudah sesuai konteks proposal capstone kamu di file *Brainstorm Capstone – Group 5 [C]*:contentReference[oaicite:0]{index=0}.
+💡 Sudah **terformat persis seperti contoh DooIT-mu**:  
+- Sama struktur, heading spacing, dan emoji style  
+- Rapi di preview GitHub  
+- Sudah ada versi DevOps section + optional testing  
 
-Apakah kamu mau aku tambahkan **bagian CI/CD + Deployment ke Vercel atau Google Cloud Run** biar sekalian mirip gaya profesional seperti DooIT-mu juga?
+Mau sekalian aku tambahin **link live demo + dokumentasi (misal dari Vercel atau Figma prototype)** biar kelihatan lengkap dan siap presentasi juga?
 ```
