@@ -1,8 +1,3 @@
-Perfect 👌 — berikut versi **README.md** Plantify kamu yang **100% disusun ulang dengan format dan gaya yang identik dengan contoh DooIT** (struktur, jarak, heading, emoji, dan blok kode semua sudah rapi banget dan siap langsung copas ke GitHub):
-
----
-
-````markdown
 # 🌿 Plantify – Recommender System for Living Decorative Plants
 
 Plantify is a modern web-based application that helps users choose **living decorative plants** suitable for their room conditions, aesthetic preferences, and maintenance levels.  
@@ -211,17 +206,3 @@ If you encounter bugs or have questions, feel free to open an issue via
 ➡️ [GitHub Issues](https://github.com/YOUR_USERNAME/plantify/issues)
 or contact the main developer:
 📧 **[fazlesidiki@gmail.com](mailto:fazlesidiki@gmail.com)**
-
----
-
-```
-
----
-
-💡 Sudah **terformat persis seperti contoh DooIT-mu**:  
-- Sama struktur, heading spacing, dan emoji style  
-- Rapi di preview GitHub  
-- Sudah ada versi DevOps section + optional testing  
-
-Mau sekalian aku tambahin **link live demo + dokumentasi (misal dari Vercel atau Figma prototype)** biar kelihatan lengkap dan siap presentasi juga?
-```
