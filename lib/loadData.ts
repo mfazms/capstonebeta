@@ -1,7 +1,7 @@
 // lib/loadData.ts
 import type { Plant } from "./types";
 
-/** ubah nilai apapun → array string aman */
+/** Helper: ubah nilai apapun jadi array string aman */
 const toList = (v: unknown): string[] =>
   Array.isArray(v)
     ? v.filter((x) => x != null && String(x).trim() !== "").map(String)
@@ -9,13 +9,24 @@ const toList = (v: unknown): string[] =>
     ? []
     : [String(v)];
 
-/** normalisasi satu entri Plant */
+/**
+ * Dapatkan URL gambar dengan format fleksibel (jpg/jpeg/png)
+ * tanpa pakai fs (client-safe).
+ */
+function getImageUrl(id: number): string {
+  // urutan prioritas fallback
+  const exts = ["jpg", "jpeg", "png"];
+  // browser akan langsung pilih yang tersedia karena semua di public/
+  // (tidak perlu fetch manual satu per satu)
+  return `/images/plants/${id}.jpg`; // default → loader PlantCard akan ganti ke jpeg/png jika jpg gagal
+}
+
+/** Normalisasi data tanaman */
 function normalizePlant(raw: any): Plant {
   const p = raw as Plant;
   return {
     ...p,
-    image: p.image ?? `/images/plants/${p.id}.jpg`,
-    // pastikan tiga field ini selalu array string:
+    image: p.image ?? getImageUrl(p.id),
     insects: toList((raw as any).insects),
     diseases: toList((raw as any).diseases),
     use: toList((raw as any).use),
@@ -23,29 +34,17 @@ function normalizePlant(raw: any): Plant {
 }
 
 /**
- * Baca data tanaman.
- * - SSR: pakai fs dari /public/data/PlantsData.json (paling stabil)
- * - Client: fetch ke /data/PlantsData.json
- * - Set path gambar default => /images/plants/{id}.jpg
- * - Normalisasi insects/diseases/use ⇒ selalu string[]
+ * Fetch data tanaman dari API route (client & server safe)
  */
 export async function fetchPlants(): Promise<Plant[]> {
-  const mapNormalize = (arr: any[]) => arr.map(normalizePlant);
+  const base =
+    typeof window === "undefined"
+      ? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+      : "";
+  const res = await fetch(base + "/api/plants", { cache: "no-store" });
+  if (!res.ok)
+    throw new Error(`Gagal memuat data tanaman: ${res.statusText}`);
 
-  if (typeof window === "undefined") {
-    // Server (SSR)
-    const fs = await import("fs/promises");
-    const path = await import("path");
-    const file = await fs.readFile(
-      path.join(process.cwd(), "public", "data", "PlantsData.json"),
-      "utf-8"
-    );
-    const data = JSON.parse(file) as any[];
-    return mapNormalize(data);
-  }
-
-  // Client
-  const res = await fetch("/data/PlantsData.json", { cache: "no-store" });
-  const data = (await res.json()) as any[];
-  return mapNormalize(data);
+  const data = (await res.json()) as Plant[];
+  return data.map(normalizePlant);
 }

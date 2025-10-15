@@ -1,23 +1,21 @@
 "use client";
 
 export default function PlantImage({
-  src,
+  id,
   alt,
   className,
 }: {
-  src?: string;
+  id: number;
   alt: string;
   className?: string;
 }) {
-  const fallback = "/images/placeholder-plant.jpg";
+  const src = `/api/plant-image?id=${id}`;
   return (
     <img
-      src={src || fallback}
-      onError={(e) => {
-        (e.currentTarget as HTMLImageElement).src = fallback;
-      }}
+      src={src}
       alt={alt}
-      className={className}
+      className={className ?? "max-h-full max-w-full object-contain"}
+      loading="lazy"
     />
   );
 }

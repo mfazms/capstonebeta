@@ -4,8 +4,6 @@ import type { Plant } from "@/lib/types";
 import { displayName } from "@/lib/types";
 
 const RENDER_WIDTH_PX = 1500;
-const IMAGE_MAX_HEIGHT_PX = 620;
-
 const INLINE_PLACEHOLDER =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(
@@ -24,9 +22,8 @@ const toList = (v: unknown) =>
 
 function getSrcCandidates(p: Plant) {
   const c: string[] = [];
-  if (p.image) c.push(p.image);
-  c.push(`/images/plants/${p.id}.jpg`);
-  c.push(`/images/plants/placeholder-plant.jpg`);
+  // prioritas: API (auto pilih ekstensi yang ada) → placeholder → inline
+  c.push(`/api/plant-image?id=${p.id}`);
   c.push(`/images/placeholder-plant.jpg`);
   c.push(INLINE_PLACEHOLDER);
   return Array.from(new Set(c));
@@ -52,9 +49,18 @@ async function tryLoadImage(img: HTMLImageElement, srcs: string[]) {
 export default function ExportPDFButton({
   plants,
   disabled,
+  className,
+  label = "Export PDF",
+  icon = true,
 }: {
   plants: Plant[];
   disabled?: boolean;
+  /** styling tombol (opsional) */
+  className?: string;
+  /** label tombol (opsional) */
+  label?: string;
+  /** tampilkan ikon panah (opsional) */
+  icon?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -89,11 +95,7 @@ export default function ExportPDFButton({
         useCORS: true,
         allowTaint: true,
       },
-      jsPDF: {
-        unit: "mm" as const,
-        format: "a4" as const,
-        orientation: "portrait" as const,
-      },
+      jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
       pagebreak: { mode: ["avoid-all", "css", "legacy"] as const },
     };
 
@@ -103,16 +105,24 @@ export default function ExportPDFButton({
   return (
     <>
       <button
-        className={`w-full rounded-full py-3 ${
-          disabled ? "opacity-50 bg-gray-400" : "bg-white text-emerald-900"
-        }`}
+        className={
+          className ??
+          `inline-flex items-center gap-2 rounded-full px-4 py-2 bg-emerald-600 text-white
+           hover:bg-emerald-700 transition shadow-sm disabled:opacity-50`
+        }
         onClick={handleExport}
         disabled={disabled}
       >
-        Export PDF ({plants.length})
+        {icon && (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7z" />
+            <path d="M5 18h14v2H5z" />
+          </svg>
+        )}
+        {label} {plants.length ? `(${plants.length})` : ""}
       </button>
 
-      {/* offscreen, bukan display:none */}
+      {/* Offscreen render target (bukan display:none) */}
       <div
         style={{
           position: "fixed",
@@ -156,19 +166,23 @@ export default function ExportPDFButton({
                   {p.latin}
                 </p>
 
-                <img
-                  alt={p.latin}
-                  data-candidates={JSON.stringify(candidates)}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    height: "auto",
-                    maxHeight: IMAGE_MAX_HEIGHT_PX,
-                    objectFit: "contain",
-                    borderRadius: 10,
-                    background: "#fafafa",
-                  }}
-                />
+                {/* Area gambar rasio 4:3 agar tidak melar */}
+                <div style={{ position: "relative", width: "100%" }}>
+                  <div style={{ paddingTop: "75%" }} />
+                  <img
+                    alt={p.latin}
+                    data-candidates={JSON.stringify(candidates)}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      borderRadius: 10,
+                      background: "#fafafa",
+                    }}
+                  />
+                </div>
 
                 <div
                   style={{
@@ -184,9 +198,7 @@ export default function ExportPDFButton({
                   </div>
                   <div>
                     <b>Kategori:</b>{" "}
-                    <span style={{ color: "#374151" }}>
-                      {p.category ?? "-"}
-                    </span>
+                    <span style={{ color: "#374151" }}>{p.category ?? "-"}</span>
                   </div>
                   <div>
                     <b>Asal/Origin:</b>{" "}
@@ -205,21 +217,15 @@ export default function ExportPDFButton({
                   </div>
                   <div>
                     <b>Cahaya ideal:</b>{" "}
-                    <span style={{ color: "#374151" }}>
-                      {p.ideallight ?? "-"}
-                    </span>
+                    <span style={{ color: "#374151" }}>{p.ideallight ?? "-"}</span>
                   </div>
                   <div>
                     <b>Cahaya toleran:</b>{" "}
-                    <span style={{ color: "#374151" }}>
-                      {p.toleratedlight ?? "-"}
-                    </span>
+                    <span style={{ color: "#374151" }}>{p.toleratedlight ?? "-"}</span>
                   </div>
                   <div>
                     <b>Penyiraman:</b>{" "}
-                    <span style={{ color: "#374151" }}>
-                      {p.watering ?? "-"}
-                    </span>
+                    <span style={{ color: "#374151" }}>{p.watering ?? "-"}</span>
                   </div>
                   <div>
                     <b>Hama:</b>{" "}
