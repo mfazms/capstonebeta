@@ -1,50 +1,34 @@
 // lib/loadData.ts
 import type { Plant } from "./types";
 
-/** Helper: ubah nilai apapun jadi array string aman */
-const toList = (v: unknown): string[] =>
-  Array.isArray(v)
-    ? v.filter((x) => x != null && String(x).trim() !== "").map(String)
-    : v == null || String(v).trim() === ""
-    ? []
-    : [String(v)];
-
 /**
- * Dapatkan URL gambar dengan format fleksibel (jpg/jpeg/png)
- * tanpa pakai fs (client-safe).
- */
-function getImageUrl(id: number): string {
-  // urutan prioritas fallback
-  const exts = ["jpg", "jpeg", "png"];
-  // browser akan langsung pilih yang tersedia karena semua di public/
-  // (tidak perlu fetch manual satu per satu)
-  return `/images/plants/${id}.jpg`; // default → loader PlantCard akan ganti ke jpeg/png jika jpg gagal
-}
-
-/** Normalisasi data tanaman */
-function normalizePlant(raw: any): Plant {
-  const p = raw as Plant;
-  return {
-    ...p,
-    image: p.image ?? getImageUrl(p.id),
-    insects: toList((raw as any).insects),
-    diseases: toList((raw as any).diseases),
-    use: toList((raw as any).use),
-  };
-}
-
-/**
- * Fetch data tanaman dari API route (client & server safe)
+ * Baca data tanaman.
+ * - SSR (Node): baca file public/data/PlantsData.json
+ * - Client: fetch /api/plants
+ * - Set path gambar default => /images/plants/{id}.(jpg|jpeg|png) akan dipilih otomatis di komponen
  */
 export async function fetchPlants(): Promise<Plant[]> {
-  const base =
-    typeof window === "undefined"
-      ? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-      : "";
-  const res = await fetch(base + "/api/plants", { cache: "no-store" });
-  if (!res.ok)
-    throw new Error(`Gagal memuat data tanaman: ${res.statusText}`);
+  const normalize = (p: Plant): Plant => ({
+    ...p,
+    image: p.image ?? `/images/plants/${p.id}.jpg`,
+  });
 
+  // SSR (Node.js)
+  if (typeof window === "undefined") {
+    const { readFile } = await import("node:fs/promises");
+    const { join } = await import("node:path");
+    const file = await readFile(
+      join(process.cwd(), "public", "data", "PlantsData.json"),
+      "utf-8"
+    );
+    const data: unknown = JSON.parse(file);
+    const arr = Array.isArray(data) ? (data as Plant[]) : [];
+    return arr.map(normalize);
+  }
+
+  // Client
+  const res = await fetch("/api/plants", { cache: "no-store" });
+  if (!res.ok) throw new Error("Gagal memuat data tanaman");
   const data = (await res.json()) as Plant[];
-  return data.map(normalizePlant);
+  return data.map(normalize);
 }

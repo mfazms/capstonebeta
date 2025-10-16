@@ -1,7 +1,9 @@
+// app/rekomendasi/page.tsx
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Fuse from "fuse.js";
 import Image from "next/image";
+import Link from "next/link";
 import { Plant, UserFilter } from "@/lib/types";
 import { fetchPlants } from "@/lib/loadData";
 import { recommend } from "@/lib/recommend";
@@ -43,17 +45,8 @@ function SearchBar({
         "
         aria-label="Search"
       >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-        >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
@@ -69,12 +62,21 @@ export default function RekomendasiPage() {
   const [filter, setFilter] = useState<UserFilter>({});
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
+  const [scrolled, setScrolled] = useState(false); // <- dipakai untuk efek blur header
 
   useEffect(() => {
     fetchPlants().then((data) => {
       setAll(data);
       setShown(data);
     });
+  }, []);
+
+  // pantau scroll (untuk blur sticky search)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const fuse = useMemo(
@@ -109,14 +111,10 @@ export default function RekomendasiPage() {
     setShown(fuse.search(val).map((r) => r.item));
   };
 
-  const onSearchSubmit = () => {
-    onSearchChange(query);
-  };
+  const onSearchSubmit = () => onSearchChange(query);
 
   const toggleSelect = (id: number) =>
-    setSelected((cur) =>
-      cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]
-    );
+    setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
 
   const selectedPlants = shown.filter((p) => selected.includes(p.id));
 
@@ -125,10 +123,10 @@ export default function RekomendasiPage() {
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 md:grid-cols-[340px_1fr]">
         {/* SIDEBAR */}
         <aside className="bg-emerald-800 text-white p-6 md:sticky md:top-0 md:h-[100dvh] md:overflow-y-auto">
-          {/* Header: tombol kembali di kiri + logo besar di kanan */}
+          {/* Header kiri-kanan */}
           <div className="mb-6 flex items-center justify-between">
-            {/* Tombol kembali */}
-            <a
+            {/* Kembali pakai <Link/> -> aman lint */}
+            <Link
               href="/"
               className="
                 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5
@@ -137,16 +135,16 @@ export default function RekomendasiPage() {
             >
               <span aria-hidden>←</span>
               <span>Kembali</span>
-            </a>
+            </Link>
 
-            {/* Logo (tanpa teks, lebih besar) */}
+            {/* Logo (tanpa teks) */}
             <Image
               src="/hero.png"
               alt="PlantMatch logo"
-              width={100}
-              height={100}
+              width={120}
+              height={120}
               priority
-              className="w-20 h-20 object-contain drop-shadow-lg"
+              className="w-24 h-24 object-contain drop-shadow-lg"
             />
           </div>
 
@@ -171,7 +169,7 @@ export default function RekomendasiPage() {
 
         {/* CONTENT */}
         <section className="relative p-6 md:p-8 bg-white">
-          {/* Fade + blur atas & bawah */}
+          {/* Fade + blur atas & bawah agar scroll terlihat halus */}
           <div className="pointer-events-none absolute top-0 left-0 right-0 h-8
                           bg-gradient-to-b from-white/90 via-white/40 to-transparent
                           backdrop-blur-sm z-30" />
@@ -180,32 +178,19 @@ export default function RekomendasiPage() {
                           backdrop-blur-sm z-30" />
 
           <div className="mx-auto max-w-6xl relative z-20">
-            {/* ==== Sticky Search Bar dengan efek blur saat discroll ==== */}
-            {(() => {
-              const [scrolled, setScrolled] = useState(false);
-              useEffect(() => {
-                const handleScroll = () => setScrolled(window.scrollY > 20);
-                window.addEventListener("scroll", handleScroll);
-                return () => window.removeEventListener("scroll", handleScroll);
-              }, []);
-              return (
-                <div
-                  className={`sticky top-4 z-50 rounded-2xl px-5 py-4 mb-6 ring-1 ring-emerald-100 shadow-[0_1px_3px_rgba(0,0,0,0.06)]
-                    transition-all duration-300 ${
-                      scrolled
-                        ? "bg-white/80 backdrop-blur-md shadow-md"
-                        : "bg-white/90"
-                    }`}
-                >
-                  <SearchBar
-                    value={query}
-                    onChange={onSearchChange}
-                    onSubmit={onSearchSubmit}
-                  />
-                </div>
-              );
-            })()}
-            {/* =============================================== */}
+            {/* Sticky Search Bar */}
+            <div
+              className={`sticky top-4 z-[60] rounded-2xl px-5 py-4 mb-6 ring-1 ring-emerald-100 shadow-[0_1px_3px_rgba(0,0,0,0.06)]
+                transition-all duration-300 ${
+                  scrolled ? "bg-white/80 backdrop-blur-md shadow-md" : "bg-white/90"
+                }`}
+            >
+              <SearchBar
+                value={query}
+                onChange={onSearchChange}
+                onSubmit={onSearchSubmit}
+              />
+            </div>
 
             <PlantList
               plants={shown}
