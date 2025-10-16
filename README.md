@@ -1,4 +1,4 @@
-# 🌿 Plantify – Recommender System for Living Decorative Plants
+# 🌿 PlantMatch – Recommender System for Living Decorative Plants
 
 Plantify is a modern web-based application that helps users choose **living decorative plants** suitable for their room conditions, aesthetic preferences, and maintenance levels.  
 The app is built with **Next.js** and leverages a **content-based recommendation algorithm** using custom filtering rules and similarity scoring.  
