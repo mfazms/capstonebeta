@@ -23,7 +23,7 @@ It uses a curated dataset from **Kaggle**, combining plant characteristics such 
 | Name | Student ID | GitHub | Email |
 |------|-------------|--------|--------|
 | Fadillah Nur Laili | 5026221032 | [@FadillahNurLaili](https://github.com/FadillahNurLaili) | – |
-| Sintiarani Febyan Putri | 5026221044 | [@sranifp](https://github.com/sranifp) | – |
+| Sintiarani Febyan Putri | 5026221044 | [@sranifp](https://github.com/sranifp) | sintiap288@gmail.com |
 | **Moehammad Fazle Mawla Sidiki** | 5026221110 | [@mfazms](https://github.com/mfazms) | fazlesidiki@gmail.com |
 | Parisya Naylah Suhaymi | 5026221138 | [@ParisyaNaylah](https://github.com/ParisyaNaylah) | – |
 | Candleline Audrina Firsta | 5026221159 | [@Candleline](https://github.com/Candleline) | – |
