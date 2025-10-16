@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Fuse from "fuse.js";
+import Image from "next/image";
 import { Plant, UserFilter } from "@/lib/types";
 import { fetchPlants } from "@/lib/loadData";
 import { recommend } from "@/lib/recommend";
@@ -109,7 +110,6 @@ export default function RekomendasiPage() {
   };
 
   const onSearchSubmit = () => {
-    // klik tombol search → jalankan filter yang sama dengan typing
     onSearchChange(query);
   };
 
@@ -125,8 +125,9 @@ export default function RekomendasiPage() {
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 md:grid-cols-[340px_1fr]">
         {/* SIDEBAR */}
         <aside className="bg-emerald-800 text-white p-6 md:sticky md:top-0 md:h-[100dvh] md:overflow-y-auto">
-          {/* Tombol kembali ke landing page (lebih kecil) */}
-          <div className="mb-4">
+          {/* Header: tombol kembali di kiri + logo besar di kanan */}
+          <div className="mb-6 flex items-center justify-between">
+            {/* Tombol kembali */}
             <a
               href="/"
               className="
@@ -137,10 +138,17 @@ export default function RekomendasiPage() {
               <span aria-hidden>←</span>
               <span>Kembali</span>
             </a>
+
+            {/* Logo (tanpa teks, lebih besar) */}
+            <Image
+              src="/hero.png"
+              alt="PlantMatch logo"
+              width={100}
+              height={100}
+              priority
+              className="w-20 h-20 object-contain drop-shadow-lg"
+            />
           </div>
-
-
-          <div className="mb-6 text-2xl font-semibold">Plantify Garden</div>
 
           <FiltersPanel
             filter={filter}
@@ -162,18 +170,42 @@ export default function RekomendasiPage() {
         </aside>
 
         {/* CONTENT */}
-        <section className="p-6 md:p-8 bg-white">
-          <div className="mx-auto max-w-6xl">
-            <div
-              className="sticky top-4 z-10 rounded-2xl bg-white/90 backdrop-blur px-5 py-4
-                         ring-1 ring-emerald-100 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-6"
-            >
-              <SearchBar
-                value={query}
-                onChange={onSearchChange}
-                onSubmit={onSearchSubmit}
-              />
-            </div>
+        <section className="relative p-6 md:p-8 bg-white">
+          {/* Fade + blur atas & bawah */}
+          <div className="pointer-events-none absolute top-0 left-0 right-0 h-8
+                          bg-gradient-to-b from-white/90 via-white/40 to-transparent
+                          backdrop-blur-sm z-30" />
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-8
+                          bg-gradient-to-t from-white/90 via-white/40 to-transparent
+                          backdrop-blur-sm z-30" />
+
+          <div className="mx-auto max-w-6xl relative z-20">
+            {/* ==== Sticky Search Bar dengan efek blur saat discroll ==== */}
+            {(() => {
+              const [scrolled, setScrolled] = useState(false);
+              useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener("scroll", handleScroll);
+                return () => window.removeEventListener("scroll", handleScroll);
+              }, []);
+              return (
+                <div
+                  className={`sticky top-4 z-50 rounded-2xl px-5 py-4 mb-6 ring-1 ring-emerald-100 shadow-[0_1px_3px_rgba(0,0,0,0.06)]
+                    transition-all duration-300 ${
+                      scrolled
+                        ? "bg-white/80 backdrop-blur-md shadow-md"
+                        : "bg-white/90"
+                    }`}
+                >
+                  <SearchBar
+                    value={query}
+                    onChange={onSearchChange}
+                    onSubmit={onSearchSubmit}
+                  />
+                </div>
+              );
+            })()}
+            {/* =============================================== */}
 
             <PlantList
               plants={shown}

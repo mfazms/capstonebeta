@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { fetchPlants } from "@/lib/loadData";
 import { displayName } from "@/lib/types";
 import PlantImage from "@/components/PlantImage";
@@ -22,6 +23,7 @@ export default async function PlantDetailPage({
       </main>
     );
 
+  // Untuk PDF kita sertakan src gambar yang otomatis pilih ekstensi melalui /api/plant-image
   const plantForPdf = { ...plant, image: `/api/plant-image?id=${plant.id}` };
 
   return (
@@ -61,6 +63,21 @@ export default async function PlantDetailPage({
 
           {/* Detail tanaman */}
           <div>
+            {/* Brand/logo aplikasi */}
+            <div className="mb-3 flex items-center gap-3">
+              <Image
+                src="/hero1.png"
+                alt="PlantMatch"
+                width={56}
+                height={56}
+                className="h-10 w-10 object-contain"
+                priority
+              />
+              <span className="text-sm font-medium text-emerald-700/80">
+                PlantMatch
+              </span>
+            </div>
+
             <h1 className="text-4xl md:text-5xl font-extrabold text-emerald-800">
               {displayName(plant)}
             </h1>
@@ -128,7 +145,7 @@ export default async function PlantDetailPage({
 
         {/* Branding aplikasi */}
         <div className="mt-12 text-center text-gray-500 text-sm">
-          © 2025 <span className="text-emerald-700 font-semibold">Plantify</span> — Smart Plant Recommender Application
+          © 2025 <span className="text-emerald-700 font-semibold">PlantMatch</span> — Find the Plant That Fits You
         </div>
       </div>
     </main>

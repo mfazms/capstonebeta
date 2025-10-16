@@ -65,7 +65,6 @@ function fitImages(root: HTMLElement) {
     const w = Math.max(1, Math.round(nw * scale));
     const h = Math.max(1, Math.round(nh * scale));
 
-    // penting: set width & height eksplisit, JANGAN width:100%
     img.style.width = `${w}px`;
     img.style.height = `${h}px`;
     img.style.maxWidth = "100%";
@@ -82,11 +81,8 @@ export default function ExportPDFButton({
 }: {
   plants: Plant[];
   disabled?: boolean;
-  /** styling tombol (opsional) */
   className?: string;
-  /** label tombol (opsional) */
   label?: string;
-  /** tampilkan ikon panah (opsional) */
   icon?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -177,7 +173,7 @@ export default function ExportPDFButton({
                 style={{
                   breakInside: "avoid",
                   pageBreakInside: "avoid",
-                  pageBreakAfter: isLast ? "avoid" : "always", // hindari halaman kosong ekstra
+                  pageBreakAfter: isLast ? "avoid" : "always",
                   padding: 24,
                   border: "1px solid #e5e7eb",
                   borderRadius: 12,
@@ -186,6 +182,35 @@ export default function ExportPDFButton({
                     "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)",
                 }}
               >
+                {/* Header brand: logo + nama aplikasi */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    marginBottom: 12,
+                  }}
+                >
+                  <img
+                    src="/hero1.png"
+                    alt="PlantMatch"
+                    style={{
+                      width: 56,
+                      height: 56,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <div
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: "#0b3d2e",
+                    }}
+                  >
+                    PlantMatch
+                  </div>
+                </div>
+
                 <h2 style={{ fontSize: 28, margin: 0, color: "#0b3d2e" }}>
                   {displayName(p)}
                 </h2>
@@ -218,7 +243,6 @@ export default function ExportPDFButton({
                     data-candidates={JSON.stringify(candidates)}
                     data-fit="pdf"
                     style={{
-                      // <== JANGAN width:100%; biarkan fitImages yang set width & height
                       display: "block",
                       borderRadius: 8,
                       background: "#fafafa",
@@ -289,7 +313,7 @@ export default function ExportPDFButton({
                   </div>
                 </div>
 
-                {/* Branding Plantify */}
+                {/* Branding footer PDF */}
                 <div
                   style={{
                     marginTop: 24,
@@ -300,7 +324,7 @@ export default function ExportPDFButton({
                     color: "#6b7280",
                   }}
                 >
-                  © 2025 <span style={{ color: "#059669", fontWeight: 600 }}>Plantify</span> — Smart Plant Recommender Application
+                  © 2025 <span style={{ color: "#059669", fontWeight: 600 }}>PlantMatch</span> — Find the Plant That Fits You
                 </div>
               </div>
             );
