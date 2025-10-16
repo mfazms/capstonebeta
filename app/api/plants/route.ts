@@ -1,31 +1,26 @@
 // app/api/plants/route.ts
 import { NextResponse } from "next/server";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import type { Plant } from "@/lib/types";
 
-// Pastikan route ini dieksekusi dinamis (tidak di-cache build)
-export const dynamic = "force-dynamic";
+// Gunakan dynamic import agar tidak perlu mengubah tsconfig.
+// (Next akan membundel JSON ini saat build)
+export const dynamic = "force-static"; // aman di edge/lambda
+export const runtime = "nodejs";       // atau 'edge' juga oke di sini
 
 export async function GET() {
   try {
-    const file = await readFile(
-      join(process.cwd(), "public", "data", "PlantsData.json"),
-      "utf-8"
-    );
-    const data: unknown = JSON.parse(file);
+    const json = (await import("@/public/data/PlantsData.json")).default as Plant[];
+    // Optional: normalisasi ringan bila perlu
+    const plants: Plant[] = json.map((p) => ({ ...p }));
 
-    // Validasi ringan supaya tidak pakai `any`
-    const list = Array.isArray(data) ? (data as Plant[]) : [];
-
-    // Normalisasi fallback image (dipakai komponen bila perlu)
-    const normalized = list.map((p) => ({
-      ...p,
-      image: p.image ?? `/images/plants/${p.id}.jpg`,
-    }));
-
-    return NextResponse.json(normalized, { status: 200 });
-  } catch (e) {
-    return NextResponse.json({ error: "Failed to read data" }, { status: 500 });
+    return NextResponse.json(plants, {
+      headers: {
+        // Cache di CDN saja; data jarang berubah
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    });
+  } catch (err) {
+    console.error("[/api/plants] load error:", err);
+    return NextResponse.json({ error: "Failed to load plants" }, { status: 500 });
   }
 }
