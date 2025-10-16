@@ -6,32 +6,29 @@ const normalize = (p: Plant): Plant => ({
   image: p.image ?? `/images/plants/${p.id}.jpg`,
 });
 
-function getBaseUrlForServer(): string {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, "");
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return "http://localhost:3000";
-}
-
+/**
+ * Baca data tanaman.
+ * - SSR: langsung import JSON (dibundel saat build) → TANPA network
+ * - Client: fetch ke /api/plants
+ */
 export async function fetchPlants(): Promise<Plant[]> {
-  // SSR: pakai base absolut
+  // Server (SSR / RSC / Route Handlers)
   if (typeof window === "undefined") {
-    const base = getBaseUrlForServer();
-    const res = await fetch(`${base}/api/plants`, {
-      cache: "no-store",
-      next: { revalidate: 0 },
-    });
-    if (!res.ok) throw new Error("Gagal memuat data tanaman (SSR)");
-    const data = (await res.json()) as Plant[];
-    return data.map(normalize);
+    try {
+      const raw = (await import("@/public/data/PlantsData.json")).default as Plant[];
+      return raw.map(normalize);
+    } catch (err) {
+      // Biar gampang trace kalau masih ada masalah
+      console.error("[fetchPlants][SSR] gagal import JSON:", err);
+      throw new Error("Gagal memuat data tanaman (SSR)");
+    }
   }
 
-  // Client: relatif
+  // Client
   const res = await fetch("/api/plants", { cache: "no-store" });
-  if (!res.ok) throw new Error("Gagal memuat data tanaman");
+  if (!res.ok) {
+    throw new Error(`Gagal memuat data tanaman (Client): ${res.status} ${res.statusText}`);
+  }
   const data = (await res.json()) as Plant[];
   return data.map(normalize);
 }

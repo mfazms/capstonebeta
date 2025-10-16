@@ -2,20 +2,14 @@
 import { NextResponse } from "next/server";
 import type { Plant } from "@/lib/types";
 
-// Gunakan dynamic import agar tidak perlu mengubah tsconfig.
-// (Next akan membundel JSON ini saat build)
-export const dynamic = "force-static"; // aman di edge/lambda
-export const runtime = "nodejs";       // atau 'edge' juga oke di sini
+export const dynamic = "force-static"; // data jarang berubah → boleh static
+export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const json = (await import("@/public/data/PlantsData.json")).default as Plant[];
-    // Optional: normalisasi ringan bila perlu
-    const plants: Plant[] = json.map((p) => ({ ...p }));
-
-    return NextResponse.json(plants, {
+    const data = (await import("@/public/data/PlantsData.json")).default as Plant[];
+    return NextResponse.json(data, {
       headers: {
-        // Cache di CDN saja; data jarang berubah
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
       },
     });
