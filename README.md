@@ -343,5 +343,6 @@ See the `LICENSE` file for more details.
 
 If you encounter bugs or have questions, feel free to open an issue via
 ➡️ [GitHub Issues](https://github.com/YOUR_USERNAME/plantify/issues)
+➡️ [Notion](https://www.notion.so/Plantmatch-296197af6217807ea0faf433e602683e?source=copy_link)
 or contact the main developer:
 📧 **[fazlesidiki@gmail.com](mailto:fazlesidiki@gmail.com)**
